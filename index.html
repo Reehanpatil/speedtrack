@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SpeedTrack – GPS Speedometer & Trip Logger | Free, Works Offline</title>
+<meta name="description" content="Free GPS speedometer for car, bike and tractor. Live speed, over-speed alert, HUD mode, route map and trip history. Install it like an app. No signup, your data stays on your phone.">
+<meta name="keywords" content="gps speedometer, speed tracker, vehicle speed tracker, trip logger, hud speedometer, over speed alert, speedometer online, trip tracker">
+<meta name="author" content="Reehan MP"><meta name="robots" content="index, follow">
+<meta name="theme-color" content="#0a0d14">
+<link rel="canonical" href="https://YOUR-SITE.netlify.app/">
+<meta property="og:type" content="website"><meta property="og:title" content="SpeedTrack – GPS Speedometer & Trip Logger"><meta property="og:description" content="Live speed, over-speed alert, HUD, route map and trips. Install like an app."><meta property="og:url" content="https://YOUR-SITE.netlify.app/"><meta property="og:image" content="https://YOUR-SITE.netlify.app/assets/icon-512.png"><meta name="twitter:card" content="summary">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="SpeedTrack"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="/manifest.webmanifest"><link rel="icon" href="/assets/icon-192.png"><link rel="apple-touch-icon" href="/assets/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script>try{var t=localStorage.getItem('st-theme');if(t!=='light')document.documentElement.classList.add('dark')}catch(e){document.documentElement.classList.add('dark')}</script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>tailwind.config={theme:{extend:{fontFamily:{display:['Rajdhani','system-ui','sans-serif'],sans:['"DM Sans"','system-ui','sans-serif']}}}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"SpeedTrack","url":"https://YOUR-SITE.netlify.app/","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"INR"},"author":{"@type":"Person","name":"Reehan MP"},"description":"GPS speedometer and trip logger with over-speed alert, HUD mode and route map."}</script>
+<style>
+:root{color-scheme:light;--bg:#f2f4f8;--card:#fff;--ink:#0d1220;--mut:#5d6679;--line:#dde2ec;--acc:#e8470f;--tile:#eef1f6;--ok:#12a150;--warn:#e69b00;--bad:#d93025;--grad:linear-gradient(135deg,#ff5a1f,#ffb020)}
+.dark{color-scheme:dark;--bg:#080b12;--card:#111622;--ink:#eef2fb;--mut:#8d98b0;--line:#222b3d;--acc:#ff6a2b;--tile:#0b0f19;--ok:#2fd77a;--warn:#ffc233;--bad:#ff5d52}
+body{background:var(--bg);color:var(--ink);transition:background .3s;-webkit-tap-highlight-color:transparent;overscroll-behavior-y:contain}
+:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.bgfx{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}.bgfx i{position:absolute;border-radius:50%;filter:blur(90px);opacity:.28;animation:fl 14s ease-in-out infinite alternate}
+.bgfx i:nth-child(1){width:380px;height:380px;left:-100px;top:-90px;background:#ff5a1f}.bgfx i:nth-child(2){width:340px;height:340px;right:-90px;top:40%;background:#2b7bff;animation-delay:-6s}
+@keyframes fl{to{transform:translate(40px,30px) scale(1.15)}}
+.glass{background:color-mix(in srgb,var(--bg) 78%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.card{background:color-mix(in srgb,var(--card) 90%,transparent);border:1px solid var(--line);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.btn{background:var(--grad);color:#1a0d00;font-weight:700;transition:transform .15s,box-shadow .2s;box-shadow:0 12px 26px -12px var(--acc)}.btn:active{transform:scale(.97)}
+.num{font-family:Rajdhani,sans-serif;font-variant-numeric:tabular-nums}
+#arc{transition:stroke-dasharray .35s ease-out,stroke .3s}#tipg{transform-origin:120px 120px;transition:transform .35s ease-out}
+.over .gcard{animation:alarm .8s infinite}@keyframes alarm{50%{box-shadow:0 0 0 6px color-mix(in srgb,var(--bad) 35%,transparent);border-color:var(--bad)}}
+.view{animation:rise .4s cubic-bezier(.2,.8,.2,1)}@keyframes rise{from{opacity:0;transform:translateY(10px)}}
+.tab{display:flex;flex-direction:column;align-items:center;gap:2px;border-radius:14px;padding:.45rem .2rem;font-size:.7rem;font-weight:600;color:var(--mut);transition:all .25s}.tab[aria-selected=true]{color:#1a0d00;background:var(--grad)}
+.dtab{flex-direction:row;gap:.5rem;padding:.5rem 1rem;font-size:.9rem}
+.chip{border:1px solid var(--line);background:var(--tile);border-radius:999px;padding:.4rem .85rem;font-size:.85rem;font-weight:600}.chip[aria-pressed=true]{background:var(--grad);color:#1a0d00;border-color:transparent}
+.sw{width:48px;height:28px;border-radius:999px;background:var(--line);position:relative;transition:background .2s;flex:none}.sw::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .25s;box-shadow:0 1px 3px #0004}.sw[aria-checked=true]{background:var(--ok)}.sw[aria-checked=true]::after{transform:translateX(20px)}
+#map,#tmap{border-radius:16px;z-index:0}.dark .leaflet-tile{filter:invert(1) hue-rotate(180deg) brightness(.9) contrast(.9)}
+.mirror{transform:scaleX(-1)}.i-sun{display:none}.dark .i-sun{display:block}.dark .i-moon{display:none}
+#toast:not(.hidden){animation:rise .3s}.heart{display:inline-block;animation:beat 1.4s infinite}@keyframes beat{0%,40%,100%{transform:scale(1)}15%{transform:scale(1.3)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body class="min-h-screen font-sans antialiased">
+<div class="bgfx" aria-hidden="true"><i></i><i></i></div>
+<header class="glass sticky top-0 z-30 border-b border-[var(--line)]" style="padding-top:env(safe-area-inset-top)">
+ <div class="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3">
+  <a href="/" class="flex items-center gap-2"><span class="btn grid h-9 w-9 place-items-center rounded-xl"><i data-lucide="gauge" class="h-5 w-5"></i></span><span class="font-display text-2xl font-bold tracking-wide">SpeedTrack</span></a>
+  <nav id="dtabs" class="hidden items-center gap-1 md:flex" aria-label="Sections"></nav>
+  <div class="flex items-center gap-2">
+   <button class="inst card hidden flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-semibold"><i data-lucide="smartphone" class="h-4 w-4"></i>Install</button>
+   <button id="theme" class="card grid h-10 w-10 place-items-center rounded-full" aria-label="Toggle dark mode"><i data-lucide="moon" class="i-moon h-5 w-5"></i><i data-lucide="sun" class="i-sun h-5 w-5"></i></button>
+  </div>
+ </div>
+</header>
+
+<main id="root" class="mx-auto max-w-5xl px-4 pb-32 pt-4 md:pb-10">
+ <!-- SPEED -->
+ <section id="v-speed" class="view md:grid md:grid-cols-2 md:gap-5">
+  <div class="gcard card rounded-3xl p-4">
+   <div class="flex items-center justify-between gap-2">
+    <span class="chip flex items-center gap-2"><span id="gdot" class="h-2.5 w-2.5 rounded-full bg-[var(--mut)]"></span><span id="gtxt">GPS off</span></span>
+    <span class="flex items-center gap-1"><button id="lm" class="card grid h-9 w-9 place-items-center rounded-full" aria-label="Lower limit"><i data-lucide="minus" class="h-4 w-4"></i></button><span class="min-w-[5.5rem] text-center text-sm font-semibold">Limit <b id="lv" class="num text-lg">60</b></span><button id="lp" class="card grid h-9 w-9 place-items-center rounded-full" aria-label="Raise limit"><i data-lucide="plus" class="h-4 w-4"></i></button></span>
+   </div>
+   <div class="relative mx-auto mt-2 max-w-[340px]">
+    <svg viewBox="0 0 240 240" class="w-full" role="img" aria-label="Speedometer"><g id="ticks"></g>
+     <circle cx="120" cy="120" r="100" fill="none" stroke="var(--line)" stroke-width="14" stroke-linecap="round" stroke-dasharray="471.24 628.32" transform="rotate(135 120 120)"/>
+     <circle id="arc" cx="120" cy="120" r="100" fill="none" stroke="var(--ok)" stroke-width="14" stroke-linecap="round" stroke-dasharray="0 628.32" transform="rotate(135 120 120)"/>
+     <g id="tipg" style="transform:rotate(135deg)"><circle cx="220" cy="120" r="8" fill="#fff" stroke="var(--acc)" stroke-width="3"/></g></svg>
+    <div class="absolute inset-0 flex flex-col items-center justify-center pt-2 text-center">
+     <span id="spd" class="num text-[5.5rem] font-bold leading-none sm:text-[6.5rem]">0</span>
+     <span id="unit" class="-mt-1 text-sm font-semibold uppercase tracking-widest text-[var(--mut)]">km/h</span>
+     <span id="slow" class="mt-1 hidden text-sm font-bold uppercase tracking-wider text-[var(--bad)]">Slow down</span>
+    </div>
+   </div>
+   <button id="hudb" class="card mx-auto flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold"><i data-lucide="maximize" class="h-4 w-4"></i>HUD mode</button>
+  </div>
+  <div>
+   <div class="mt-4 grid grid-cols-2 gap-2 md:mt-0">
+    <button id="main" class="btn col-span-2 flex items-center justify-center gap-2 rounded-2xl py-4 text-xl"><i data-lucide="play" class="h-6 w-6"></i><span id="mt">Start trip</span></button>
+    <button id="stop" class="card col-span-2 hidden flex items-center justify-center gap-2 rounded-2xl py-3 font-semibold text-[var(--bad)]"><i data-lucide="square" class="h-4 w-4"></i>Stop and save trip</button>
+   </div>
+   <div class="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3" id="stats"></div>
+   <div id="ios" class="card mt-3 hidden rounded-2xl p-3 text-sm text-[var(--mut)]"><b class="text-[var(--ink)]">Install on iPhone:</b> tap Share, then "Add to Home Screen".</div>
+   <p class="mt-3 text-center text-xs text-[var(--mut)]">Fix the phone in a holder. Do not use it while driving.</p>
+  </div>
+ </section>
+
+ <!-- MAP -->
+ <section id="v-map" class="view hidden"><div class="card relative overflow-hidden rounded-3xl p-2"><div id="map" style="height:62vh;min-height:320px"></div>
+  <button id="fol" class="btn absolute bottom-5 right-5 z-[500] flex items-center gap-2 rounded-full px-4 py-2 text-sm"><i data-lucide="locate-fixed" class="h-4 w-4"></i>Follow</button></div></section>
+
+ <!-- TRIPS -->
+ <section id="v-trips" class="view hidden"><h2 class="font-display text-2xl font-bold">Trip history</h2><div id="tl" class="mt-3 grid gap-2 sm:grid-cols-2"></div></section>
+
+ <!-- SETTINGS -->
+ <section id="v-set" class="view hidden mx-auto max-w-xl space-y-3">
+  <div class="card rounded-2xl p-4"><p class="font-semibold">Units</p><div class="mt-2 flex gap-2"><button class="chip" data-u="kmh">km/h</button><button class="chip" data-u="mph">mph</button></div></div>
+  <div class="card rounded-2xl p-4"><p class="font-semibold">Over-speed limit</p><input id="lim" type="range" min="10" max="200" class="mt-2 w-full accent-[var(--acc)]" aria-label="Speed limit"><p class="text-sm text-[var(--mut)]">Alert above <b id="limv"></b></p></div>
+  <div class="card space-y-4 rounded-2xl p-4">
+   <label class="flex items-center justify-between gap-3"><span><b>Alert sound</b><br><span class="text-sm text-[var(--mut)]">Beep when over the limit</span></span><button class="sw" role="switch" data-k="sound" aria-label="Alert sound"></button></label>
+   <label class="flex items-center justify-between gap-3"><span><b>Vibration</b><br><span class="text-sm text-[var(--mut)]">Buzz when over the limit</span></span><button class="sw" role="switch" data-k="vib" aria-label="Vibration"></button></label>
+   <label class="flex items-center justify-between gap-3"><span><b>Keep screen on</b><br><span class="text-sm text-[var(--mut)]">While a trip is running</span></span><button class="sw" role="switch" data-k="wake" aria-label="Keep screen on"></button></label>
+  </div>
+  <div class="card rounded-2xl p-4"><p class="font-semibold">Install as app</p><p class="mt-1 text-sm text-[var(--mut)]">Opens full screen like a real app, works offline.</p><button class="inst btn mt-3 hidden rounded-xl px-4 py-2">Install SpeedTrack</button></div>
+  <button id="wipe" class="card w-full rounded-2xl py-3 font-semibold text-[var(--bad)]">Delete all trips</button>
+ </section>
+ <footer class="mt-10 text-center text-sm text-[var(--mut)]">Developed by <span class="heart" role="img" aria-label="love">❤️</span> <strong class="text-[var(--ink)]">Reehan MP</strong></footer>
+</main>
+
+<nav id="btabs" class="glass fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 gap-1 border-t border-[var(--line)] px-2 pt-2 md:hidden" style="padding-bottom:calc(.5rem + env(safe-area-inset-bottom))" aria-label="Sections"></nav>
+
+<div id="hud" class="fixed inset-0 z-50 hidden flex-col items-center justify-center bg-black text-white">
+ <div id="hbox" class="text-center"><div id="hspd" class="num font-bold leading-none" style="font-size:min(46vw,60vh)">0</div><div id="hunit" class="text-3xl font-semibold uppercase tracking-widest text-neutral-400">km/h</div></div>
+ <div class="absolute right-4 flex gap-2" style="top:calc(1rem + env(safe-area-inset-top))"><button id="hmir" class="rounded-full bg-neutral-800 px-4 py-2 text-sm font-semibold">Mirror</button><button id="hx" class="rounded-full bg-neutral-800 px-4 py-2 text-sm font-semibold">Close</button></div>
+</div>
+<div id="modal" class="fixed inset-0 z-40 hidden items-end bg-black/60 sm:items-center sm:justify-center" role="dialog" aria-modal="true">
+ <div class="card max-h-[92vh] w-full overflow-auto rounded-t-3xl p-4 sm:max-w-lg sm:rounded-3xl" style="background:var(--card)"><div class="flex items-center justify-between"><h3 id="mtl" class="font-display text-xl font-bold"></h3><button id="mx" class="grid h-9 w-9 place-items-center rounded-full" aria-label="Close"><i data-lucide="x" class="h-5 w-5"></i></button></div>
+  <div id="tmap" class="mt-3" style="height:240px"></div><div id="mst" class="mt-3 grid grid-cols-3 gap-2"></div>
+  <div class="mt-3 grid grid-cols-3 gap-2"><button id="xg" class="card rounded-xl py-2 text-sm font-semibold">GPX</button><button id="xc" class="card rounded-xl py-2 text-sm font-semibold">CSV</button><button id="xd" class="card rounded-xl py-2 text-sm font-semibold text-[var(--bad)]">Delete</button></div></div>
+</div>
+<div id="toast" role="status" aria-live="polite" class="pointer-events-none fixed inset-x-4 bottom-28 z-[60] mx-auto hidden max-w-sm rounded-2xl px-4 py-3 text-center font-medium text-white shadow-lg md:bottom-6"></div>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],sh=(e,o)=>e.classList.toggle('hidden',!o);
+const ld=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k));return v==null?d:v}catch{return d}},sv=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));return true}catch{return false}};
+const C={unit:'kmh',limit:60,sound:true,vib:true,wake:true,...ld('st-cfg',{})},saveC=()=>sv('st-cfg',C);
+const U=()=>C.unit==='kmh'?{k:3.6,n:'km/h',max:200,step:40,d:1000,dn:'km'}:{k:2.23694,n:'mph',max:120,step:20,d:1609.344,dn:'mi'};
+const S={run:false,pause:false,speed:0,dist:0,max:0,mov:0,el:0,seg:0,t0:0,pts:[],anchor:null,prev:null,wid:null,lock:null,beep:0,over:false};
+let toastT,M=null,live=null,dot=null,follow=true,TM=null,cur=null,dp=null;
+const toast=(m,ok)=>{const t=$('#toast');t.textContent=m;t.style.background=ok?'var(--ok)':'var(--bad)';sh(t,true);clearTimeout(toastT);toastT=setTimeout(()=>sh(t,false),3500)};
+const icons=()=>window.lucide&&lucide.createIcons();
+const hav=(a,b)=>{const r=Math.PI/180,x=(b.lng-a.lng)*r*Math.cos((a.lat+b.lat)*r/2),y=(b.lat-a.lat)*r;return Math.hypot(x,y)*6371000};
+const el=()=>S.el+(S.run&&!S.pause?Date.now()-S.seg:0);
+const fd=s=>{s=Math.round(s);const h=Math.floor(s/3600),m=Math.floor(s%3600/60);return(h?h+':'+String(m).padStart(2,'0'):m)+':'+String(s%60).padStart(2,'0')};
+const fdist=m=>{const x=m/U().d;return x.toFixed(x<10?2:1)},fs=v=>Math.round(v*U().k);
+
+/* tabs */
+const TABS=[['speed','Speed','gauge'],['map','Map','map'],['trips','Trips','route'],['set','Settings','settings']];
+TABS.forEach(([k,n,i])=>[['#dtabs','tab dtab'],['#btabs','tab']].forEach(([b,c])=>{const x=document.createElement('button');x.className=c;x.dataset.t=k;x.setAttribute('aria-selected',k==='speed');x.innerHTML=`<i data-lucide="${i}" class="h-5 w-5"></i><span>${n}</span>`;x.onclick=()=>go(k);$(b).appendChild(x)}));
+function go(k){$$('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.t===k));TABS.forEach(([t])=>sh($('#v-'+t),t===k));
+ if(k==='map'){initMap();setTimeout(()=>M&&M.invalidateSize(),60)}if(k==='trips')renderTrips();scrollTo(0,0)}
+
+/* stats tiles */
+[['max','Max speed'],['avg','Avg speed'],['dist','Distance'],['time','Trip time'],['mov','Moving time'],['alt','Altitude']].forEach(([id,l])=>{const d=document.createElement('div');d.className='card rounded-2xl p-3';d.innerHTML=`<p class="text-xs font-semibold text-[var(--mut)]">${l}</p><p id="s-${id}" class="num text-2xl font-bold">0</p>`;$('#stats').appendChild(d)});
+
+/* gauge ticks */
+function ticks(){const u=U(),g=$('#ticks');g.innerHTML='';for(let v=0;v<=u.max;v+=u.step){const a=(135+270*v/u.max)*Math.PI/180,x=120+76*Math.cos(a),y=120+76*Math.sin(a),t=document.createElementNS('http://www.w3.org/2000/svg','text');t.setAttribute('x',x);t.setAttribute('y',y);t.setAttribute('text-anchor','middle');t.setAttribute('dominant-baseline','central');t.setAttribute('font-size','11');t.setAttribute('fill','var(--mut)');t.textContent=v;g.appendChild(t)}}
+
+/* paint everything */
+function paint(){
+ const u=U(),v=S.speed*u.k,f=Math.min(1,v/u.max),over=v>C.limit&&S.run&&!S.pause;
+ $('#arc').setAttribute('stroke-dasharray',`${471.24*f} 628.32`);$('#tipg').style.transform=`rotate(${135+270*f}deg)`;
+ $('#arc').style.stroke=over?'var(--bad)':v>C.limit*.85?'var(--warn)':'var(--ok)';
+ $('#spd').textContent=Math.round(v);$('#unit').textContent=u.n;$('#hspd').textContent=Math.round(v);$('#hunit').textContent=u.n;$('#hud').style.background=over?'#5a0d0d':'#000';
+ sh($('#slow'),over);document.body.classList.toggle('over',over);
+ $('#lv').textContent=C.limit;
+ $('#s-max').textContent=fs(S.max)+' '+u.n;$('#s-avg').textContent=(S.mov>5?fs(S.dist/S.mov):0)+' '+u.n;
+ $('#s-dist').textContent=fdist(S.dist)+' '+u.dn;$('#s-time').textContent=fd(el()/1000);$('#s-mov').textContent=fd(S.mov);
+ if(over&&!S.over){S.over=true}if(!over)S.over=false;
+}
+setInterval(()=>{if(S.run){paint();const now=Date.now();if(S.over&&now-S.beep>2200){S.beep=now;if(C.sound)beep();if(C.vib&&navigator.vibrate)navigator.vibrate([200,100,200])}}},1000);
+function beep(){try{const a=new (window.AudioContext||window.webkitAudioContext)(),o=a.createOscillator(),g=a.createGain();o.type='square';o.frequency.value=880;g.gain.value=.12;o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+.18)}catch{}}
+const setGps=(t,c)=>{$('#gtxt').textContent=t;$('#gdot').style.background=c}
+
+/* GPS */
+function gpsOn(){
+ if(!navigator.geolocation){toast('GPS is not supported on this device.');return false}
+ if(!window.isSecureContext){toast('Open the https:// link. GPS needs a secure page.');return false}
+ if(S.wid==null){S.wid=navigator.geolocation.watchPosition(onFix,onErr,{enableHighAccuracy:true,maximumAge:0,timeout:20000});setGps('Searching GPS…','var(--warn)')}return true}
+function gpsOff(){if(S.wid!=null)navigator.geolocation.clearWatch(S.wid);S.wid=null;S.speed=0;S.prev=null;S.anchor=null;setGps('GPS off','var(--mut)');paint()}
+function onErr(e){toast({1:'Location is blocked. Allow it in browser settings and try again.',2:'Cannot find your location. Move to open sky.',3:'GPS is slow. Please wait…'}[e.code]||'GPS error.');if(e.code===1){S.run=false;gpsOff();ui()}}
+function onFix(p){
+ const c=p.coords,t=p.timestamp,acc=c.accuracy||99,pt={lat:c.latitude,lng:c.longitude,t};
+ setGps(`${acc<=20?'GPS good':acc<=50?'GPS ok':'GPS weak'} ±${Math.round(acc)} m`,acc<=20?'var(--ok)':acc<=50?'var(--warn)':'var(--bad)');
+ $('#s-alt').textContent=c.altitude!=null?Math.round(c.altitude)+' m':'—';
+ if(acc>60)return;
+ let v=c.speed!=null&&!isNaN(c.speed)?c.speed:(S.prev?hav(S.prev,pt)/Math.max(1,(t-S.prev.t)/1000):0);
+ S.prev=pt;if(v<0.7)v=0;if(v>100)return;
+ S.speed=v===0?0:S.speed*.35+v*.65;
+ if(S.run&&!S.pause){
+  if(!S.anchor){S.anchor=pt;S.pts.push([pt.lat,pt.lng,t,v])}
+  else{const d=hav(S.anchor,pt);if(v>0&&d>=Math.max(3,acc*.4)){S.dist+=d;S.mov+=(t-S.anchor.t)/1000;S.anchor=pt;S.pts.push([pt.lat,pt.lng,t,v]);if(live)live.addLatLng([pt.lat,pt.lng])}else if(v===0)S.anchor.t=t}
+  S.max=Math.max(S.max,v)}
+ if(M){dot.setLatLng([pt.lat,pt.lng]);if(!M.hasLayer(dot))dot.addTo(M);if(follow)M.setView([pt.lat,pt.lng],Math.max(M.getZoom(),16))}
+ paint();
+}
+async function wake(on){try{if(on&&C.wake&&'wakeLock' in navigator)S.lock=await navigator.wakeLock.request('screen');else if(S.lock){await S.lock.release();S.lock=null}}catch{}}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&S.run&&!S.pause)wake(true)});
+
+/* trip controls */
+function ui(){const r=S.run,p=S.pause;$('#mt').textContent=!r?'Start trip':p?'Resume':'Pause';$('#main').innerHTML=`<i data-lucide="${!r||p?'play':'pause'}" class="h-6 w-6"></i><span id="mt">${!r?'Start trip':p?'Resume':'Pause'}</span>`;sh($('#stop'),r);icons()}
+$('#main').onclick=()=>{
+ if(!S.run){if(!gpsOn())return;Object.assign(S,{run:true,pause:false,dist:0,max:0,mov:0,el:0,seg:Date.now(),t0:Date.now(),pts:[],anchor:null});if(live)live.setLatLngs([]);wake(true);toast('Trip started. Drive safe!',true)}
+ else if(S.pause){S.pause=false;S.seg=Date.now();S.anchor=null}
+ else{S.el=el();S.pause=true;S.anchor=null}
+ ui();paint()};
+$('#stop').onclick=()=>{
+ const dur=Math.round(el()/1000),pts=S.pts.map(p=>[+p[0].toFixed(5),+p[1].toFixed(5),Math.round((p[2]-S.t0)/1000),+p[3].toFixed(1)]);
+ if(S.dist>=30){const tr=ld('st-trips',[]);tr.unshift({id:Date.now(),start:S.t0,dur,mov:Math.round(S.mov),dist:Math.round(S.dist),max:S.max,pts});while(tr.length&&!sv('st-trips',tr))tr.pop();toast('Trip saved ✓',true)}else toast('Trip too short, not saved.');
+ S.run=false;S.pause=false;S.dist=S.max=S.mov=S.el=0;S.pts=[];gpsOff();wake(false);ui();paint()};
+$('#lm').onclick=()=>{C.limit=Math.max(10,C.limit-5);saveC();paint();syncSet()};$('#lp').onclick=()=>{C.limit=Math.min(250,C.limit+5);saveC();paint();syncSet()};
+
+/* map */
+function initMap(){if(M||!window.L)return;M=L.map('map',{zoomControl:false}).setView([22,79],4);L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(M);live=L.polyline(S.pts.map(p=>[p[0],p[1]]),{color:'#ff5a1f',weight:5}).addTo(M);dot=L.circleMarker([0,0],{radius:8,color:'#fff',weight:3,fillColor:'#2b7bff',fillOpacity:1});M.on('dragstart',()=>{follow=false;$('#fol').style.opacity=.6});if(S.prev){dot.setLatLng([S.prev.lat,S.prev.lng]).addTo(M);M.setView([S.prev.lat,S.prev.lng],16)}}
+$('#fol').onclick=()=>{follow=true;$('#fol').style.opacity=1;if(S.prev&&M)M.setView([S.prev.lat,S.prev.lng],Math.max(M.getZoom(),16));else toast('Start a trip to see your position.')};
+
+/* trips */
+function tStats(t){const u=U();return[['Distance',fdist(t.dist)+' '+u.dn],['Max',fs(t.max)+' '+u.n],['Avg',(t.mov>5?fs(t.dist/t.mov):0)+' '+u.n],['Time',fd(t.dur)],['Moving',fd(t.mov)],['Points',t.pts.length]]}
+function renderTrips(){const tr=ld('st-trips',[]),box=$('#tl');box.innerHTML=tr.length?'':'<div class="card rounded-2xl p-6 text-center text-[var(--mut)] sm:col-span-2">No trips yet. Start a trip on the Speed tab.</div>';
+ tr.forEach(t=>{const b=document.createElement('button'),u=U();b.className='card rounded-2xl p-4 text-left transition hover:-translate-y-0.5';b.innerHTML=`<p class="text-sm text-[var(--mut)]">${new Date(t.start).toLocaleString([], {dateStyle:'medium',timeStyle:'short'})}</p><p class="num mt-1 text-3xl font-bold">${fdist(t.dist)} <span class="text-base">${u.dn}</span></p><p class="mt-1 text-sm text-[var(--mut)]">${fd(t.dur)} · max ${fs(t.max)} ${u.n}</p>`;b.onclick=()=>openTrip(t);box.appendChild(b)})}
+function openTrip(t){cur=t;$('#mtl').textContent=new Date(t.start).toLocaleString([], {dateStyle:'medium',timeStyle:'short'});$('#mst').innerHTML=tStats(t).map(([a,b])=>`<div class="rounded-xl bg-[var(--tile)] p-2 text-center"><p class="text-xs text-[var(--mut)]">${a}</p><p class="num text-lg font-bold">${b}</p></div>`).join('');
+ const m=$('#modal');m.classList.remove('hidden');m.classList.add('flex');
+ setTimeout(()=>{if(TM){TM.remove();TM=null}TM=L.map('tmap',{zoomControl:false});L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(TM);const ll=t.pts.map(p=>[p[0],p[1]]);if(ll.length){const pl=L.polyline(ll,{color:'#ff5a1f',weight:5}).addTo(TM);TM.fitBounds(pl.getBounds(),{padding:[20,20]})}else TM.setView([22,79],4)},50)}
+const closeT=()=>{const m=$('#modal');m.classList.add('hidden');m.classList.remove('flex');if(TM){TM.remove();TM=null}};$('#mx').onclick=closeT;$('#modal').onclick=e=>{if(e.target.id==='modal')closeT()};
+const dl=(n,txt,type)=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type}));a.download=n;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000)};
+$('#xg').onclick=()=>dl('trip-'+cur.id+'.gpx',`<?xml version="1.0"?><gpx version="1.1" creator="SpeedTrack" xmlns="http://www.topografix.com/GPX/1/1"><trk><name>SpeedTrack ${new Date(cur.start).toLocaleString()}</name><trkseg>`+cur.pts.map(p=>`<trkpt lat="${p[0]}" lon="${p[1]}"><time>${new Date(cur.start+p[2]*1000).toISOString()}</time></trkpt>`).join('')+'</trkseg></trk></gpx>','application/gpx+xml');
+$('#xc').onclick=()=>dl('trip-'+cur.id+'.csv','time,lat,lng,speed_kmh\n'+cur.pts.map(p=>[new Date(cur.start+p[2]*1000).toISOString(),p[0],p[1],(p[3]*3.6).toFixed(1)].join(',')).join('\n'),'text/csv');
+$('#xd').onclick=()=>{if(!confirm('Delete this trip?'))return;sv('st-trips',ld('st-trips',[]).filter(t=>t.id!==cur.id));closeT();renderTrips()};
+$('#wipe').onclick=()=>{if(confirm('Delete all saved trips?')){sv('st-trips',[]);toast('All trips deleted',true)}};
+
+/* settings */
+function syncSet(){$$('[data-u]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.u===C.unit));$('#lim').max=U().max;$('#lim').value=C.limit;$('#limv').textContent=C.limit+' '+U().n;$$('[data-k]').forEach(b=>b.setAttribute('aria-checked',!!C[b.dataset.k]))}
+$$('[data-u]').forEach(b=>b.onclick=()=>{if(C.unit===b.dataset.u)return;const f=U().k;C.unit=b.dataset.u;C.limit=Math.round(C.limit*f/U().k);saveC();ticks();syncSet();paint()});
+$('#lim').oninput=()=>{C.limit=+$('#lim').value;saveC();syncSet();paint()};
+$$('[data-k]').forEach(b=>b.onclick=()=>{C[b.dataset.k]=!C[b.dataset.k];saveC();syncSet()});
+const R=document.documentElement;$('#theme').onclick=()=>{R.classList.toggle('dark');try{localStorage.setItem('st-theme',R.classList.contains('dark')?'dark':'light')}catch{}};
+
+/* HUD */
+$('#hudb').onclick=()=>{const h=$('#hud');h.classList.remove('hidden');h.classList.add('flex');try{R.requestFullscreen&&R.requestFullscreen()}catch{}};
+$('#hx').onclick=()=>{const h=$('#hud');h.classList.add('hidden');h.classList.remove('flex');try{document.fullscreenElement&&document.exitFullscreen()}catch{}};
+$('#hmir').onclick=()=>$('#hbox').classList.toggle('mirror');
+
+/* PWA */
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e;$$('.inst').forEach(b=>sh(b,true))});addEventListener('appinstalled',()=>$$('.inst').forEach(b=>sh(b,false)));
+$$('.inst').forEach(b=>b.onclick=async()=>{if(!dp)return;dp.prompt();await dp.userChoice;dp=null;$$('.inst').forEach(x=>sh(x,false))});
+if(/iphone|ipad|ipod/i.test(navigator.userAgent)&&!navigator.standalone)sh($('#ios'),true);
+if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'))navigator.serviceWorker.register('/sw.js').catch(()=>{});
+ticks();syncSet();ui();paint();icons();
+</script>
+</body>
+</html>
