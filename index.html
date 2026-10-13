@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>SpeedTrack – GPS Speedometer & Trip Logger | Free, Works Offline</title>
-<meta name="description" content="Free GPS speedometer for car, bike and tractor. Live speed, over-speed alert, HUD mode, route map and trip history. Install it like an app. No signup, your data stays on your phone.">
+<title>SpeedTrack – GPS Speedometer, Walk & Step Counter | Free, Works Offline</title>
+<meta name="description" content="Free GPS speedometer, walking tracker and step counter for car, bike, tractor and walks. Live speed, over-speed alert, HUD mode, route map and trip history. Install it like an app. No signup, your data stays on your phone.">
 <meta name="keywords" content="gps speedometer, speed tracker, vehicle speed tracker, trip logger, hud speedometer, over speed alert, speedometer online, trip tracker">
 <meta name="author" content="Reehan MP"><meta name="robots" content="index, follow">
 <meta name="theme-color" content="#0a0d14">
@@ -39,6 +39,7 @@ body{background:var(--bg);color:var(--ink);transition:background .3s;-webkit-tap
 .tab{display:flex;flex-direction:column;align-items:center;gap:2px;border-radius:14px;padding:.45rem .2rem;font-size:.7rem;font-weight:600;color:var(--mut);transition:all .25s}.tab[aria-selected=true]{color:#1a0d00;background:var(--grad)}
 .dtab{flex-direction:row;gap:.5rem;padding:.5rem 1rem;font-size:.9rem}
 .chip{border:1px solid var(--line);background:var(--tile);border-radius:999px;padding:.4rem .85rem;font-size:.85rem;font-weight:600}.chip[aria-pressed=true]{background:var(--grad);color:#1a0d00;border-color:transparent}
+.seg{display:flex;align-items:center;justify-content:center;gap:.4rem;border-radius:12px;padding:.6rem;font-weight:700;font-size:.9rem;color:var(--mut);transition:all .25s}.seg[aria-selected=true]{color:#1a0d00;background:var(--grad);box-shadow:0 8px 18px -8px var(--acc)}
 .sw{width:48px;height:28px;border-radius:999px;background:var(--line);position:relative;transition:background .2s;flex:none}.sw::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .25s;box-shadow:0 1px 3px #0004}.sw[aria-checked=true]{background:var(--ok)}.sw[aria-checked=true]::after{transform:translateX(20px)}
 #map,#tmap{border-radius:16px;z-index:0}.dark .leaflet-tile{filter:invert(1) hue-rotate(180deg) brightness(.9) contrast(.9)}
 .mirror{transform:scaleX(-1)}.i-sun{display:none}.dark .i-sun{display:block}.dark .i-moon{display:none}
@@ -61,11 +62,11 @@ body{background:var(--bg);color:var(--ink);transition:background .3s;-webkit-tap
 
 <main id="root" class="mx-auto max-w-5xl px-4 pb-32 pt-4 md:pb-10">
  <!-- SPEED -->
- <section id="v-speed" class="view md:grid md:grid-cols-2 md:gap-5">
+ <section id="v-speed" class="view"><div id="modes" class="mx-auto mb-3 grid max-w-sm grid-cols-2 gap-1 rounded-2xl bg-[var(--tile)] p-1"><button class="seg" data-md="drive" aria-selected="true"><i data-lucide="car" class="h-4 w-4"></i>Drive</button><button class="seg" data-md="walk" aria-selected="false"><i data-lucide="footprints" class="h-4 w-4"></i>Walk</button></div><div class="md:grid md:grid-cols-2 md:gap-5">
   <div class="gcard card rounded-3xl p-4">
    <div class="flex items-center justify-between gap-2">
     <span class="chip flex items-center gap-2"><span id="gdot" class="h-2.5 w-2.5 rounded-full bg-[var(--mut)]"></span><span id="gtxt">GPS off</span></span>
-    <span class="flex items-center gap-1"><button id="lm" class="card grid h-9 w-9 place-items-center rounded-full" aria-label="Lower limit"><i data-lucide="minus" class="h-4 w-4"></i></button><span class="min-w-[5.5rem] text-center text-sm font-semibold">Limit <b id="lv" class="num text-lg">60</b></span><button id="lp" class="card grid h-9 w-9 place-items-center rounded-full" aria-label="Raise limit"><i data-lucide="plus" class="h-4 w-4"></i></button></span>
+    <span id="lmbox" class="flex items-center gap-1"><button id="lm" class="card grid h-9 w-9 place-items-center rounded-full" aria-label="Lower limit"><i data-lucide="minus" class="h-4 w-4"></i></button><span class="min-w-[5.5rem] text-center text-sm font-semibold">Limit <b id="lv" class="num text-lg">60</b></span><button id="lp" class="card grid h-9 w-9 place-items-center rounded-full" aria-label="Raise limit"><i data-lucide="plus" class="h-4 w-4"></i></button></span>
    </div>
    <div class="relative mx-auto mt-2 max-w-[340px]">
     <svg viewBox="0 0 240 240" class="w-full" role="img" aria-label="Speedometer"><g id="ticks"></g>
@@ -78,18 +79,19 @@ body{background:var(--bg);color:var(--ink);transition:background .3s;-webkit-tap
      <span id="slow" class="mt-1 hidden text-sm font-bold uppercase tracking-wider text-[var(--bad)]">Slow down</span>
     </div>
    </div>
-   <button id="hudb" class="card mx-auto flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold"><i data-lucide="maximize" class="h-4 w-4"></i>HUD mode</button>
+   <div class="flex justify-center gap-2"><button id="awake" class="chip flex items-center gap-2" aria-pressed="false"><i data-lucide="sun" class="h-4 w-4"></i>Screen on</button><button id="hudb" class="card flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold"><i data-lucide="maximize" class="h-4 w-4"></i>HUD mode</button></div>
   </div>
   <div>
    <div class="mt-4 grid grid-cols-2 gap-2 md:mt-0">
     <button id="main" class="btn col-span-2 flex items-center justify-center gap-2 rounded-2xl py-4 text-xl"><i data-lucide="play" class="h-6 w-6"></i><span id="mt">Start trip</span></button>
     <button id="stop" class="card col-span-2 hidden flex items-center justify-center gap-2 rounded-2xl py-3 font-semibold text-[var(--bad)]"><i data-lucide="square" class="h-4 w-4"></i>Stop and save trip</button>
    </div>
+   <div id="walkbox" class="card mt-3 hidden rounded-2xl p-4"><div class="flex items-end justify-between"><div><p class="text-xs font-semibold text-[var(--mut)]">Steps</p><p id="steps" class="num text-5xl font-bold leading-none">0</p></div><div class="text-right"><p class="text-xs font-semibold text-[var(--mut)]">Today</p><p class="num text-xl font-bold"><span id="today">0</span> / <span id="goal">6000</span></p></div></div><div class="mt-3 h-2.5 overflow-hidden rounded-full bg-[var(--tile)]"><div id="gbar" class="h-full w-0 bg-[var(--ok)] transition-all duration-500"></div></div><p id="smsg" class="mt-2 text-xs text-[var(--mut)]"></p></div>
    <div class="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3" id="stats"></div>
    <div id="ios" class="card mt-3 hidden rounded-2xl p-3 text-sm text-[var(--mut)]"><b class="text-[var(--ink)]">Install on iPhone:</b> tap Share, then "Add to Home Screen".</div>
    <p class="mt-3 text-center text-xs text-[var(--mut)]">Fix the phone in a holder. Do not use it while driving.</p>
   </div>
- </section>
+ </div></section>
 
  <!-- MAP -->
  <section id="v-map" class="view hidden"><div class="card relative overflow-hidden rounded-3xl p-2"><div id="map" style="height:62vh;min-height:320px"></div>
@@ -101,6 +103,7 @@ body{background:var(--bg);color:var(--ink);transition:background .3s;-webkit-tap
  <!-- SETTINGS -->
  <section id="v-set" class="view hidden mx-auto max-w-xl space-y-3">
   <div class="card rounded-2xl p-4"><p class="font-semibold">Units</p><div class="mt-2 flex gap-2"><button class="chip" data-u="kmh">km/h</button><button class="chip" data-u="mph">mph</button></div></div>
+  <div class="card rounded-2xl p-4"><p class="font-semibold">Walking profile</p><div class="mt-2 grid grid-cols-3 gap-2"><label class="text-xs font-semibold text-[var(--mut)]">Height (cm)<input id="hgt" type="number" inputmode="numeric" class="mt-1 w-full rounded-xl border border-[var(--line)] bg-[var(--tile)] px-3 py-2 text-base text-[var(--ink)]"></label><label class="text-xs font-semibold text-[var(--mut)]">Weight (kg)<input id="wgt" type="number" inputmode="numeric" class="mt-1 w-full rounded-xl border border-[var(--line)] bg-[var(--tile)] px-3 py-2 text-base text-[var(--ink)]"></label><label class="text-xs font-semibold text-[var(--mut)]">Daily goal<input id="gol" type="number" inputmode="numeric" class="mt-1 w-full rounded-xl border border-[var(--line)] bg-[var(--tile)] px-3 py-2 text-base text-[var(--ink)]"></label></div><p class="mt-3 text-xs font-semibold text-[var(--mut)]">Step sensitivity</p><div class="mt-1 flex gap-2"><button class="chip" data-s="low">Low</button><button class="chip" data-s="med">Medium</button><button class="chip" data-s="high">High</button></div><p class="mt-2 text-xs text-[var(--mut)]">Phone sensors give an estimate (about ±10%). Hold the phone or keep it in a pocket. Steps count only while the app is open.</p></div>
   <div class="card rounded-2xl p-4"><p class="font-semibold">Over-speed limit</p><input id="lim" type="range" min="10" max="200" class="mt-2 w-full accent-[var(--acc)]" aria-label="Speed limit"><p class="text-sm text-[var(--mut)]">Alert above <b id="limv"></b></p></div>
   <div class="card space-y-4 rounded-2xl p-4">
    <label class="flex items-center justify-between gap-3"><span><b>Alert sound</b><br><span class="text-sm text-[var(--mut)]">Beep when over the limit</span></span><button class="sw" role="switch" data-k="sound" aria-label="Alert sound"></button></label>
@@ -129,9 +132,9 @@ body{background:var(--bg);color:var(--ink);transition:background .3s;-webkit-tap
 <script>
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],sh=(e,o)=>e.classList.toggle('hidden',!o);
 const ld=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k));return v==null?d:v}catch{return d}},sv=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));return true}catch{return false}};
-const C={unit:'kmh',limit:60,sound:true,vib:true,wake:true,...ld('st-cfg',{})},saveC=()=>sv('st-cfg',C);
-const U=()=>C.unit==='kmh'?{k:3.6,n:'km/h',max:200,step:40,d:1000,dn:'km'}:{k:2.23694,n:'mph',max:120,step:20,d:1609.344,dn:'mi'};
-const S={run:false,pause:false,speed:0,dist:0,max:0,mov:0,el:0,seg:0,t0:0,pts:[],anchor:null,prev:null,wid:null,lock:null,beep:0,over:false};
+const C={unit:'kmh',limit:60,sound:true,vib:true,wake:true,mode:'drive',height:165,weight:60,goal:6000,sens:'med',...ld('st-cfg',{})},saveC=()=>sv('st-cfg',C);
+const U=()=>{const w=C.mode==='walk';return C.unit==='kmh'?{k:3.6,n:'km/h',max:w?12:200,step:w?2:40,d:1000,dn:'km'}:{k:2.23694,n:'mph',max:w?8:120,step:w?2:20,d:1609.344,dn:'mi'}};
+const S={steps:0,cad:1.8,smov:0,lastFix:0,keep:false,run:false,pause:false,speed:0,dist:0,max:0,mov:0,el:0,seg:0,t0:0,pts:[],anchor:null,prev:null,wid:null,lock:null,beep:0,over:false};
 let toastT,M=null,live=null,dot=null,follow=true,TM=null,cur=null,dp=null;
 const toast=(m,ok)=>{const t=$('#toast');t.textContent=m;t.style.background=ok?'var(--ok)':'var(--bad)';sh(t,true);clearTimeout(toastT);toastT=setTimeout(()=>sh(t,false),3500)};
 const icons=()=>window.lucide&&lucide.createIcons();
@@ -147,24 +150,27 @@ function go(k){$$('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.t=
  if(k==='map'){initMap();setTimeout(()=>M&&M.invalidateSize(),60)}if(k==='trips')renderTrips();scrollTo(0,0)}
 
 /* stats tiles */
-[['max','Max speed'],['avg','Avg speed'],['dist','Distance'],['time','Trip time'],['mov','Moving time'],['alt','Altitude']].forEach(([id,l])=>{const d=document.createElement('div');d.className='card rounded-2xl p-3';d.innerHTML=`<p class="text-xs font-semibold text-[var(--mut)]">${l}</p><p id="s-${id}" class="num text-2xl font-bold">0</p>`;$('#stats').appendChild(d)});
+[['max','Max speed'],['avg','Avg speed'],['dist','Distance'],['time','Trip time'],['mov','Moving time','drive'],['alt','Altitude','drive'],['pace','Pace','walk'],['kcal','Calories','walk']].forEach(([id,l,m])=>{const d=document.createElement('div');d.dataset.m=m||'';d.className='card rounded-2xl p-3';d.innerHTML=`<p class="text-xs font-semibold text-[var(--mut)]">${l}</p><p id="s-${id}" class="num text-2xl font-bold">0</p>`;$('#stats').appendChild(d)});
 
 /* gauge ticks */
 function ticks(){const u=U(),g=$('#ticks');g.innerHTML='';for(let v=0;v<=u.max;v+=u.step){const a=(135+270*v/u.max)*Math.PI/180,x=120+76*Math.cos(a),y=120+76*Math.sin(a),t=document.createElementNS('http://www.w3.org/2000/svg','text');t.setAttribute('x',x);t.setAttribute('y',y);t.setAttribute('text-anchor','middle');t.setAttribute('dominant-baseline','central');t.setAttribute('font-size','11');t.setAttribute('fill','var(--mut)');t.textContent=v;g.appendChild(t)}}
 
 /* paint everything */
 function paint(){
- const u=U(),v=S.speed*u.k,f=Math.min(1,v/u.max),over=v>C.limit&&S.run&&!S.pause;
+ const u=U(),v=S.speed*u.k,f=Math.min(1,v/u.max),over=v>C.limit&&S.run&&!S.pause&&C.mode==='drive';
  $('#arc').setAttribute('stroke-dasharray',`${471.24*f} 628.32`);$('#tipg').style.transform=`rotate(${135+270*f}deg)`;
  $('#arc').style.stroke=over?'var(--bad)':v>C.limit*.85?'var(--warn)':'var(--ok)';
  $('#spd').textContent=Math.round(v);$('#unit').textContent=u.n;$('#hspd').textContent=Math.round(v);$('#hunit').textContent=u.n;$('#hud').style.background=over?'#5a0d0d':'#000';
  sh($('#slow'),over);document.body.classList.toggle('over',over);
  $('#lv').textContent=C.limit;
- $('#s-max').textContent=fs(S.max)+' '+u.n;$('#s-avg').textContent=(S.mov>5?fs(S.dist/S.mov):0)+' '+u.n;
- $('#s-dist').textContent=fdist(S.dist)+' '+u.dn;$('#s-time').textContent=fd(el()/1000);$('#s-mov').textContent=fd(S.mov);
+ $('#s-max').textContent=fs(S.max)+' '+u.n;$('#s-avg').textContent=(movNow()>5?fs(distNow()/movNow()):0)+' '+u.n;
+ $('#s-dist').textContent=fdist(distNow())+' '+u.dn;$('#s-time').textContent=fd(el()/1000);$('#s-mov').textContent=fd(movNow());
+ if(C.mode==='walk'){const st=stepsNow(),tot=today()+(S.run?st:0);$('#steps').textContent=st.toLocaleString();$('#today').textContent=tot.toLocaleString();$('#goal').textContent=C.goal.toLocaleString();$('#gbar').style.width=Math.min(100,tot/C.goal*100)+'%';
+  $('#smsg').textContent=tot>=C.goal?'Goal reached! 🎉':S.run&&!P.got?'Steps are estimated from GPS distance (no step sensor data).':(C.goal-tot).toLocaleString()+' steps to your goal';
+  $('#s-pace').textContent=pace()+' /'+u.dn;$('#s-kcal').textContent=Math.round(C.weight*distNow()/1000*.55)+' kcal'}
  if(over&&!S.over){S.over=true}if(!over)S.over=false;
 }
-setInterval(()=>{if(S.run){paint();const now=Date.now();if(S.over&&now-S.beep>2200){S.beep=now;if(C.sound)beep();if(C.vib&&navigator.vibrate)navigator.vibrate([200,100,200])}}},1000);
+setInterval(()=>{if(S.run){if(C.mode==='walk'&&!S.pause&&Date.now()-S.lastFix>5000)S.speed=(Date.now()-P.last<2500)?stride()*S.cad:0;paint();const now=Date.now();if(S.over&&now-S.beep>2200){S.beep=now;if(C.sound)beep();if(C.vib&&navigator.vibrate)navigator.vibrate([200,100,200])}}},1000);
 function beep(){try{const a=new (window.AudioContext||window.webkitAudioContext)(),o=a.createOscillator(),g=a.createGain();o.type='square';o.frequency.value=880;g.gain.value=.12;o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+.18)}catch{}}
 const setGps=(t,c)=>{$('#gtxt').textContent=t;$('#gdot').style.background=c}
 
@@ -181,7 +187,7 @@ function onFix(p){
  $('#s-alt').textContent=c.altitude!=null?Math.round(c.altitude)+' m':'—';
  if(acc>60)return;
  let v=c.speed!=null&&!isNaN(c.speed)?c.speed:(S.prev?hav(S.prev,pt)/Math.max(1,(t-S.prev.t)/1000):0);
- S.prev=pt;if(v<0.7)v=0;if(v>100)return;
+ S.prev=pt;if(v<(C.mode==='walk'?0.3:0.7))v=0;if(v>100)return;S.lastFix=Date.now();
  S.speed=v===0?0:S.speed*.35+v*.65;
  if(S.run&&!S.pause){
   if(!S.anchor){S.anchor=pt;S.pts.push([pt.lat,pt.lng,t,v])}
@@ -190,30 +196,63 @@ function onFix(p){
  if(M){dot.setLatLng([pt.lat,pt.lng]);if(!M.hasLayer(dot))dot.addTo(M);if(follow)M.setView([pt.lat,pt.lng],Math.max(M.getZoom(),16))}
  paint();
 }
-async function wake(on){try{if(on&&C.wake&&'wakeLock' in navigator)S.lock=await navigator.wakeLock.request('screen');else if(S.lock){await S.lock.release();S.lock=null}}catch{}}
-document.addEventListener('visibilitychange',()=>{if(!document.hidden&&S.run&&!S.pause)wake(true)});
+const awakeUi=()=>$('#awake').setAttribute('aria-pressed',!!(S.lock&&!S.lock.released));
+async function wake(){
+ const want=S.keep||(S.run&&!S.pause&&C.wake);
+ try{
+  if(want&&'wakeLock' in navigator){if(!S.lock||S.lock.released){S.lock=await navigator.wakeLock.request('screen');S.lock.addEventListener('release',awakeUi)}}
+  else if(S.lock){await S.lock.release();S.lock=null}
+ }catch{if(S.keep){S.keep=false;toast('Could not keep the screen on. Battery saver may be blocking it.')}}
+ awakeUi()}
+$('#awake').onclick=async()=>{
+ if(!('wakeLock' in navigator))return toast('This browser cannot keep the screen on. Update Chrome or Safari.');
+ S.keep=!S.keep;await wake();if(S.keep)toast('Screen stays on until you turn this off.',true);else toast('Screen can sleep again.',true)};
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)wake()});
 
 /* trip controls */
-function ui(){const r=S.run,p=S.pause;$('#mt').textContent=!r?'Start trip':p?'Resume':'Pause';$('#main').innerHTML=`<i data-lucide="${!r||p?'play':'pause'}" class="h-6 w-6"></i><span id="mt">${!r?'Start trip':p?'Resume':'Pause'}</span>`;sh($('#stop'),r);icons()}
-$('#main').onclick=()=>{
- if(!S.run){if(!gpsOn())return;Object.assign(S,{run:true,pause:false,dist:0,max:0,mov:0,el:0,seg:Date.now(),t0:Date.now(),pts:[],anchor:null});if(live)live.setLatLngs([]);wake(true);toast('Trip started. Drive safe!',true)}
+function ui(){const r=S.run,p=S.pause,t=!r?(C.mode==='walk'?'Start walk':'Start trip'):p?'Resume':'Pause';$('#main').innerHTML=`<i data-lucide="${!r||p?'play':'pause'}" class="h-6 w-6"></i><span id="mt">${t}</span>`;sh($('#stop'),r);icons()}
+$('#main').onclick=async()=>{
+ if(!S.run){const walk=C.mode==='walk',mo=walk?await motionOn():false,g=gpsOn();if(!g&&!mo)return;Object.assign(S,{run:true,pause:false,dist:0,max:0,mov:0,el:0,seg:Date.now(),t0:Date.now(),pts:[],anchor:null,steps:0,smov:0,cad:1.8});if(live)live.setLatLngs([]);wake();toast(walk?'Walk started. Enjoy!':'Trip started. Drive safe!',true)}
  else if(S.pause){S.pause=false;S.seg=Date.now();S.anchor=null}
  else{S.el=el();S.pause=true;S.anchor=null}
  ui();paint()};
 $('#stop').onclick=()=>{
- const dur=Math.round(el()/1000),pts=S.pts.map(p=>[+p[0].toFixed(5),+p[1].toFixed(5),Math.round((p[2]-S.t0)/1000),+p[3].toFixed(1)]);
- if(S.dist>=30){const tr=ld('st-trips',[]);tr.unshift({id:Date.now(),start:S.t0,dur,mov:Math.round(S.mov),dist:Math.round(S.dist),max:S.max,pts});while(tr.length&&!sv('st-trips',tr))tr.pop();toast('Trip saved ✓',true)}else toast('Trip too short, not saved.');
- S.run=false;S.pause=false;S.dist=S.max=S.mov=S.el=0;S.pts=[];gpsOff();wake(false);ui();paint()};
+ const walk=C.mode==='walk',dur=Math.round(el()/1000),st=stepsNow(),dd=distNow(),mv=Math.round(movNow()),pts=S.pts.map(p=>[+p[0].toFixed(5),+p[1].toFixed(5),Math.round((p[2]-S.t0)/1000),+p[3].toFixed(1)]);
+ if(dd>=30||(walk&&st>=20)){const tr=ld('st-trips',[]);tr.unshift({id:Date.now(),start:S.t0,dur,mov:mv,dist:Math.round(dd),max:S.max,pts,mode:C.mode,steps:walk?st:0,kcal:Math.round(C.weight*dd/1000*.55)});while(tr.length&&!sv('st-trips',tr))tr.pop();if(walk)addToday(st);toast(walk?'Walk saved ✓':'Trip saved ✓',true)}else toast('Too short, not saved.');
+ S.run=false;S.pause=false;S.dist=S.max=S.mov=S.el=S.steps=S.smov=0;S.pts=[];motionOff();gpsOff();wake();ui();paint()};
 $('#lm').onclick=()=>{C.limit=Math.max(10,C.limit-5);saveC();paint();syncSet()};$('#lp').onclick=()=>{C.limit=Math.min(250,C.limit+5);saveC();paint();syncSet()};
+
+/* walking: step sensor (phone accelerometer), helpers, mode */
+const P={on:false,got:false,base:9.8,sm:0,prev:0,last:0};
+const stride=()=>C.height*.415/100,stepsNow=()=>P.got?S.steps:Math.round(S.dist/stride()),distNow=()=>S.dist>0?S.dist:S.steps*stride(),movNow=()=>S.mov>0?S.mov:S.smov;
+const pace=()=>movNow()>5&&distNow()>20?fd(movNow()/(distNow()/U().d)):'—';
+const dayKey=()=>{const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()},today=()=>{const d=ld('st-day',{});return d.k===dayKey()?d.n:0},addToday=n=>sv('st-day',{k:dayKey(),n:today()+n});
+async function motionOn(){
+ if(!('DeviceMotionEvent' in window))return false;
+ try{if(typeof DeviceMotionEvent.requestPermission==='function'&&(await DeviceMotionEvent.requestPermission())!=='granted'){toast('Motion permission denied. Steps will be estimated from GPS.');return false}}catch{return false}
+ P.got=false;P.sm=0;P.prev=0;P.last=0;addEventListener('devicemotion',motion);P.on=true;
+ setTimeout(()=>{if(P.on&&!P.got)toast('No step sensor data. Steps will be estimated from GPS distance.')},3000);return true}
+function motionOff(){removeEventListener('devicemotion',motion);P.on=false}
+function motion(e){
+ const a=e.accelerationIncludingGravity;if(!a||a.x==null)return;P.got=true;
+ if(!S.run||S.pause||C.mode!=='walk')return;
+ const m=Math.hypot(a.x,a.y,a.z);P.base+=(m-P.base)*.02;P.sm+=((m-P.base)-P.sm)*.35;
+ const T={low:1.6,med:1.1,high:.7}[C.sens]||1.1,now=Date.now();
+ if(P.prev<=T&&P.sm>T&&now-P.last>280){const gap=(now-P.last)/1000;if(P.last&&gap<2){S.cad=S.cad*.7+(1/gap)*.3;S.smov+=gap}S.steps++;P.last=now;paint()}
+ P.prev=P.sm}
+function setMode(m){C.mode=m;saveC();$$('[data-md]').forEach(b=>b.setAttribute('aria-selected',b.dataset.md===m));const w=m==='walk';sh($('#walkbox'),w);sh($('#lmbox'),!w);$$('#stats>div').forEach(d=>sh(d,!d.dataset.m||d.dataset.m===m));ticks();ui();paint()}
+$$('[data-md]').forEach(b=>b.onclick=()=>{if(S.run)return toast('Stop the trip first.');setMode(b.dataset.md)});
+[['#hgt','height',100,230],['#wgt','weight',20,200],['#gol','goal',500,50000]].forEach(([id,k,lo,hi])=>$(id).onchange=()=>{C[k]=Math.min(hi,Math.max(lo,+$(id).value||C[k]));saveC();syncSet();paint()});
+$$('[data-s]').forEach(b=>b.onclick=()=>{C.sens=b.dataset.s;saveC();syncSet()});
 
 /* map */
 function initMap(){if(M||!window.L)return;M=L.map('map',{zoomControl:false}).setView([22,79],4);L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(M);live=L.polyline(S.pts.map(p=>[p[0],p[1]]),{color:'#ff5a1f',weight:5}).addTo(M);dot=L.circleMarker([0,0],{radius:8,color:'#fff',weight:3,fillColor:'#2b7bff',fillOpacity:1});M.on('dragstart',()=>{follow=false;$('#fol').style.opacity=.6});if(S.prev){dot.setLatLng([S.prev.lat,S.prev.lng]).addTo(M);M.setView([S.prev.lat,S.prev.lng],16)}}
 $('#fol').onclick=()=>{follow=true;$('#fol').style.opacity=1;if(S.prev&&M)M.setView([S.prev.lat,S.prev.lng],Math.max(M.getZoom(),16));else toast('Start a trip to see your position.')};
 
 /* trips */
-function tStats(t){const u=U();return[['Distance',fdist(t.dist)+' '+u.dn],['Max',fs(t.max)+' '+u.n],['Avg',(t.mov>5?fs(t.dist/t.mov):0)+' '+u.n],['Time',fd(t.dur)],['Moving',fd(t.mov)],['Points',t.pts.length]]}
+function tStats(t){const u=U();if(t.mode==='walk')return[['Steps',(t.steps||0).toLocaleString()],['Distance',fdist(t.dist)+' '+u.dn],['Time',fd(t.dur)],['Avg',(t.mov>5?fs(t.dist/t.mov):0)+' '+u.n],['Calories',(t.kcal||0)+' kcal'],['Max',fs(t.max)+' '+u.n]];return[['Distance',fdist(t.dist)+' '+u.dn],['Max',fs(t.max)+' '+u.n],['Avg',(t.mov>5?fs(t.dist/t.mov):0)+' '+u.n],['Time',fd(t.dur)],['Moving',fd(t.mov)],['Points',t.pts.length]]}
 function renderTrips(){const tr=ld('st-trips',[]),box=$('#tl');box.innerHTML=tr.length?'':'<div class="card rounded-2xl p-6 text-center text-[var(--mut)] sm:col-span-2">No trips yet. Start a trip on the Speed tab.</div>';
- tr.forEach(t=>{const b=document.createElement('button'),u=U();b.className='card rounded-2xl p-4 text-left transition hover:-translate-y-0.5';b.innerHTML=`<p class="text-sm text-[var(--mut)]">${new Date(t.start).toLocaleString([], {dateStyle:'medium',timeStyle:'short'})}</p><p class="num mt-1 text-3xl font-bold">${fdist(t.dist)} <span class="text-base">${u.dn}</span></p><p class="mt-1 text-sm text-[var(--mut)]">${fd(t.dur)} · max ${fs(t.max)} ${u.n}</p>`;b.onclick=()=>openTrip(t);box.appendChild(b)})}
+ tr.forEach(t=>{const b=document.createElement('button'),u=U();b.className='card rounded-2xl p-4 text-left transition hover:-translate-y-0.5';b.innerHTML=`<p class="text-sm text-[var(--mut)]">${t.mode==='walk'?'🚶':'🚗'} ${new Date(t.start).toLocaleString([], {dateStyle:'medium',timeStyle:'short'})}</p><p class="num mt-1 text-3xl font-bold">${fdist(t.dist)} <span class="text-base">${u.dn}</span></p><p class="mt-1 text-sm text-[var(--mut)]">${fd(t.dur)} · ${t.mode==='walk'?(t.steps||0).toLocaleString()+' steps':'max '+fs(t.max)+' '+u.n}</p>`;b.onclick=()=>openTrip(t);box.appendChild(b)})}
 function openTrip(t){cur=t;$('#mtl').textContent=new Date(t.start).toLocaleString([], {dateStyle:'medium',timeStyle:'short'});$('#mst').innerHTML=tStats(t).map(([a,b])=>`<div class="rounded-xl bg-[var(--tile)] p-2 text-center"><p class="text-xs text-[var(--mut)]">${a}</p><p class="num text-lg font-bold">${b}</p></div>`).join('');
  const m=$('#modal');m.classList.remove('hidden');m.classList.add('flex');
  setTimeout(()=>{if(TM){TM.remove();TM=null}TM=L.map('tmap',{zoomControl:false});L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(TM);const ll=t.pts.map(p=>[p[0],p[1]]);if(ll.length){const pl=L.polyline(ll,{color:'#ff5a1f',weight:5}).addTo(TM);TM.fitBounds(pl.getBounds(),{padding:[20,20]})}else TM.setView([22,79],4)},50)}
@@ -225,8 +264,8 @@ $('#xd').onclick=()=>{if(!confirm('Delete this trip?'))return;sv('st-trips',ld('
 $('#wipe').onclick=()=>{if(confirm('Delete all saved trips?')){sv('st-trips',[]);toast('All trips deleted',true)}};
 
 /* settings */
-function syncSet(){$$('[data-u]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.u===C.unit));$('#lim').max=U().max;$('#lim').value=C.limit;$('#limv').textContent=C.limit+' '+U().n;$$('[data-k]').forEach(b=>b.setAttribute('aria-checked',!!C[b.dataset.k]))}
-$$('[data-u]').forEach(b=>b.onclick=()=>{if(C.unit===b.dataset.u)return;const f=U().k;C.unit=b.dataset.u;C.limit=Math.round(C.limit*f/U().k);saveC();ticks();syncSet();paint()});
+function syncSet(){$$('[data-u]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.u===C.unit));$('#lim').max=C.unit==='kmh'?200:130;$('#lim').value=C.limit;$('#limv').textContent=C.limit+' '+U().n;$$('[data-k]').forEach(b=>b.setAttribute('aria-checked',!!C[b.dataset.k]));$('#hgt').value=C.height;$('#wgt').value=C.weight;$('#gol').value=C.goal;$$('[data-s]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.s===C.sens))}
+$$('[data-u]').forEach(b=>b.onclick=()=>{if(C.unit===b.dataset.u)return;const f=U().k;C.unit=b.dataset.u;C.limit=Math.round(C.limit*U().k/f);saveC();ticks();syncSet();paint()});
 $('#lim').oninput=()=>{C.limit=+$('#lim').value;saveC();syncSet();paint()};
 $$('[data-k]').forEach(b=>b.onclick=()=>{C[b.dataset.k]=!C[b.dataset.k];saveC();syncSet()});
 const R=document.documentElement;$('#theme').onclick=()=>{R.classList.toggle('dark');try{localStorage.setItem('st-theme',R.classList.contains('dark')?'dark':'light')}catch{}};
@@ -241,7 +280,7 @@ addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e;$$('.inst').f
 $$('.inst').forEach(b=>b.onclick=async()=>{if(!dp)return;dp.prompt();await dp.userChoice;dp=null;$$('.inst').forEach(x=>sh(x,false))});
 if(/iphone|ipad|ipod/i.test(navigator.userAgent)&&!navigator.standalone)sh($('#ios'),true);
 if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'))navigator.serviceWorker.register('/sw.js').catch(()=>{});
-ticks();syncSet();ui();paint();icons();
+syncSet();setMode(C.mode);icons();
 </script>
 </body>
 </html>
